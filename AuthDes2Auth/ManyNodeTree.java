@@ -8,7 +8,7 @@ import java.util.List;
 public class ManyNodeTree
 {
     /** 树根*/
-    private ManyTreeNode root;
+    public ManyTreeNode root;
 
     /**
      * 构造函数
@@ -18,6 +18,36 @@ public class ManyNodeTree
         root = new ManyTreeNode(new TreeNode("/"));
     }
 
+    public void Add_child(List<String> dir) {
+        ManyTreeNode tmpTreeNod = root;
+        List<ManyTreeNode> tmpList = root.getChildList();
+        int i = 1;
+        int flag  = 0 ;
+        while (i<dir.size()) {
+
+            tmpTreeNod = new ManyTreeNode(new TreeNode(dir.get(i),dir.get(i-1)));
+            //System.out.println("h");
+            /*
+            for (int j=0; j<tmpList.size(); j++) {
+                if (tmpTreeNod.getData().TreeNodeSL_Eq(tmpList.get(j).getData())) {
+                    flag = 0;
+                    tmpTreeNod = tmpList.get(j);
+                    break;
+                }
+            } */
+            if (flag == 0) {
+                //System.out.println("h");
+                System.out.println(tmpTreeNod.getData().getNodeId());
+                tmpList.add(tmpTreeNod);
+                //System.out.println(tmpList.get(0).getData().getNodeId());
+            }
+                tmpList = tmpTreeNod.getChildList();
+
+            flag = 0;
+            i++;
+        }
+
+    }
     /**
      * 生成一颗多叉树，根节点为root
      *
@@ -84,6 +114,7 @@ public class ManyNodeTree
      */
     public String iteratorTree(ManyTreeNode manyTreeNode)
     {
+        System.out.println("-----------------------");
         StringBuilder buffer = new StringBuilder();
         buffer.append("\n");
 

@@ -58,4 +58,16 @@ public class TreeNode
         this.text = text;
     }
 
+    public boolean TreeNodeSL_Eq( TreeNode node2) {
+        if (nodeId.equals(node2.getNodeId()) && nodeId.equals(node2.getParentId())) {
+            return true;
+        }  else return false;
+    }
+
+    public static void main(String[] args) {
+        TreeNode test = new TreeNode("2","2");
+        TreeNode test2 = new TreeNode("2","2");
+        System.out.println(test.TreeNodeSL_Eq(test2));
+    }
+
 }

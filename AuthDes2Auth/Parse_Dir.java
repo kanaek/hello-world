@@ -1,8 +1,6 @@
 package AuthDes2Auth;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Created by user on 2016/3/7.
@@ -11,6 +9,36 @@ public class Parse_Dir {
 
     private List<TreeNode> treeNodes;
     private ManyNodeTree tree ;
+    private List<String> dir;
+    private Set<String> dir2;
+
+    private List<Dir> dir3;
+
+    public List<Dir> getDir3() {
+        return dir3;
+    }
+
+    public void setDir3(List<Dir> dir3) {
+        this.dir3 = dir3;
+    }
+
+    public ManyNodeTree getTree() {
+        return tree;
+    }
+
+    public void setTree(ManyNodeTree tree) {
+        this.tree = tree;
+    }
+
+    public List<String> getDir() {
+        return dir;
+    }
+
+    public void setDir(List<String> dir) {
+        this.dir = dir;
+    }
+
+
 
     public List<TreeNode> getTreeNodes() {
         return treeNodes;
@@ -25,6 +53,9 @@ public class Parse_Dir {
     public Parse_Dir() {
         treeNodes = new ArrayList<TreeNode>();
         tree = new ManyNodeTree();
+        dir = new ArrayList<String>();
+        dir2 = new HashSet<String>();
+        dir3 = new ArrayList<Dir>();
     }
 
     public void parse_line(String line){
@@ -40,15 +71,19 @@ public class Parse_Dir {
 
                if (countSlash==2) {
                    tmp = line.substring(1,i);
-                   System.out.println(tmp+",/");
+                  // System.out.println(tmp+",/");
                    lastSlash = i;
-                   tree.addChild(new );
-                   add_child(tmp,"/");
+
+                   dir.add("/");
+                   dir.add(tmp);
+                   dir2.add(line.substring(0,i));
                } else if (countSlash>2){
-                   tmp2= tmp;
+
                    tmp = line.substring(lastSlash+1,i);
-                   System.out.println(tmp2+','+tmp);
-                   add_child(tmp,tmp2);
+
+
+                   dir.add(tmp);
+                   dir2.add(line.substring(0,i));
                    lastSlash = i;
 
                }
@@ -58,16 +93,22 @@ public class Parse_Dir {
 
             if (i==line.length()-1){
                 if (countSlash==1) {
-                    System.out.println(line.substring(lastSlash+1,i+1)+','+'/');
-                    add_child(line.substring(lastSlash+1,i+1),"/");
+                    //System.out.println(line.substring(lastSlash+1,i+1)+','+'/');
+
+                    dir.add("/");
+                    dir.add(line.substring(lastSlash+1,i+1));
+                    dir2.add(line.substring(0,i+1));
+
                     break;
                 }
                 else if (countSlash>=2 && line.charAt(i) !='/') {
 
-                    tmp2=tmp;
                     tmp =  line.substring(lastSlash+1,i+1);
-                    System.out.println(tmp+','+tmp2);
-                    add_child(tmp, tmp2);
+
+                    dir.add(tmp);
+                    dir2.add(line.substring(0,i+1));
+                    //add_child(tmp, tmp2);
+
                 }
            }
            i++;
@@ -75,9 +116,40 @@ public class Parse_Dir {
         //System.out.println(line);
     }
 
-    public void add_child(String child, String father) {
-        treeNodes.add(new TreeNode(child, father));
+    public void sort_Dir() {
+        int count;
+        System.out.println("---------------");
+        Iterator<String> iter = dir2.iterator();
+        //dir.get(0).
+        while (iter.hasNext()) {
+            String tmp4 = iter.next();
+            String tmp5=tmp4;
+            count = tmp5.length() - tmp5.replaceAll("/","").length();
+            dir3.add(new Dir(tmp4,count));
+           // System.out.println(count);
+
+
+        }
+        for (int i = 0; i < dir3.size(); i++)
+        {
+            for (int j = i; j < dir3.size(); j++)
+            {
+                if (dir3.get(i).count > dir3.get(j).count)
+                {
+                    Dir temp = dir3.get(i);
+                    dir3.set(i, dir3.get(j));// dir3.get(j);
+                    dir3.set(j, temp);
+                }
+            }
+        }
+
+        Iterator<Dir> iter3 = dir3.iterator();
+        //System.out.println(dir3.get(1).count);
+        while (iter3.hasNext())  {
+            System.out.println(iter3.next().dir);
+        }
     }
+
 
     public void delete_Dup() {
         for (int i = 0; i < treeNodes.size(); i++) {
@@ -104,18 +176,25 @@ public class Parse_Dir {
         }
     }
 
+
     public static void main(String[] args) {
         Parse_Dir parse = new Parse_Dir();
-        /*
+
         parse.parse_line("/trunk/doc/ppp/10.项目周报" );
         parse.parse_line("/trunk/doc/09.会议纪要");
         parse.parse_line("/trunk/doc/08.部署");
         parse.parse_line("/trunk/doc/04.数据导入");
         parse.parse_line("/trunk/doc/00.项目计划");
         parse.parse_line("/trunk/doc/00.项目计划");
-        */
-        parse.parse_line("/dddd/dddd/dddd/");
-        System.out.println();
-        parse.delete_Dup();
+        parse.parse_line("/line2");
+        parse.parse_line("/trunk/d/");
+        parse.parse_line("/trunk/d");
+        parse.parse_line("/trunk/doc/01.用户需求");
+        parse.parse_line("/d/d");
+        parse.parse_line("/d/d/d");
+
+        parse.sort_Dir();
+
+
     }
 }
