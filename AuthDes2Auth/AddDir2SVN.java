@@ -69,7 +69,7 @@ public class AddDir2SVN {
         //parse.sort_Dir();
     //}
 
-    private  SVNRepository login(String url1) throws SVNException{
+    public  SVNRepository login(String url1) throws SVNException{
         SVNURL Url = SVNURL.parseURIEncoded(url1);
         SVNRepository repository = SVNRepositoryFactory.create(Url);
         ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(name,password);
@@ -90,7 +90,7 @@ public class AddDir2SVN {
     }
 
 
-    private  void setupLibrary() {
+    public  void setupLibrary() {
         DAVRepositoryFactory.setup();
         SVNRepositoryFactoryImpl.setup();
         FSRepositoryFactory.setup();
@@ -101,7 +101,7 @@ public class AddDir2SVN {
             AddDir2SVN add = new AddDir2SVN("https://user-PC/svn/qq","kr","123");
 
             add.setupLibrary();
-            SVNRepository repository = add.login("https://kk-PC/svn/qq");
+            SVNRepository repository = add.login("https://user-PC/svn/qq");
             add.adddir(repository,"/trunk");
             add.adddir(repository,"/trunk/fff");
             

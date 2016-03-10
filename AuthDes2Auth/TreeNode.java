@@ -59,7 +59,7 @@ public class TreeNode
     }
 
     public boolean TreeNodeSL_Eq( TreeNode node2) {
-        if (nodeId.equals(node2.getNodeId()) && parentId.equals(node2.getParentId())) {
+        if (nodeId.equals(node2.getNodeId()) && nodeId.equals(node2.getParentId())) {
             return true;
         }  else return false;
     }
