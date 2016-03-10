@@ -26,19 +26,20 @@ public class ManyNodeTree
         while (i<dir.size()) {
 
             tmpTreeNod = new ManyTreeNode(new TreeNode(dir.get(i),dir.get(i-1)));
-            //System.out.println("h");
-            /*
+           // System.out.println(tmpList.size());
+
             for (int j=0; j<tmpList.size(); j++) {
                 if (tmpTreeNod.getData().TreeNodeSL_Eq(tmpList.get(j).getData())) {
-                    flag = 0;
+                    flag = 1;
                     tmpTreeNod = tmpList.get(j);
                     break;
                 }
-            } */
+            }
             if (flag == 0) {
                 //System.out.println("h");
-                System.out.println(tmpTreeNod.getData().getNodeId());
+                //System.out.println(tmpTreeNod.getData().getNodeId()+','+tmpTreeNod.getData().getParentId());
                 tmpList.add(tmpTreeNod);
+                System.out.println(tmpList.size());
                 //System.out.println(tmpList.get(0).getData().getNodeId());
             }
                 tmpList = tmpTreeNod.getChildList();
@@ -46,6 +47,9 @@ public class ManyNodeTree
             flag = 0;
             i++;
         }
+
+       // System.out.println(root.getData().getNodeId()+','+root.getChildList().get(0).getData().getNodeId());
+       // System.out.println(root.getChildList().get(0).getChildList().get(0).getData().getNodeId());
 
     }
     /**
@@ -146,50 +150,20 @@ public class ManyNodeTree
 
     public static void main(String[] args) {
         List<TreeNode> treeNodes = new ArrayList<TreeNode>();
-        treeNodes.add(new TreeNode("系统权限管理", "/"));
-        treeNodes.add(new TreeNode("用户管理", "系统权限管理"));
-
-        treeNodes.add(new TreeNode("角色管理", "系统权限管理"));
-        treeNodes.add(new TreeNode("角色管理", "系统权限管理"));
-        treeNodes.add(new TreeNode("角色管理", "系统权限管理"));
-        /*
-        treeNodes.add(new TreeNode("组管理", "系统权限管理"));
-        treeNodes.add(new TreeNode("用户菜单管理", "系统权限管理"));
-        treeNodes.add(new TreeNode("角色菜单管理", "系统权限管理"));
-        treeNodes.add(new TreeNode("用户权限管理", "系统权限管理"));
-        treeNodes.add(new TreeNode("站内信", "root"));
-        treeNodes.add(new TreeNode("写信", "站内信"));
-        treeNodes.add(new TreeNode("收信", "站内信"));
-        treeNodes.add(new TreeNode("草稿", "站内信"));
-        */
-
-        for (int i = 0; i < treeNodes.size(); i++) {
-            TreeNode tmp = treeNodes.get(i);
-            //System.out.println(tmp.getNodeId()+tmp.getParentId());
-            int j = i + 1;
-            while (j < treeNodes.size()) {
-
-                TreeNode tmp2 = treeNodes.get(j);
-                if (tmp.getParentId().equals(tmp2.getParentId()) && tmp.getNodeId().equals(tmp2.getNodeId())) {
-                    treeNodes.remove(j);
-                    //System.out.println(tmp2.getParentId()+','+tmp.getParentId());
-                    //System.out.println(tmp2.getNodeId()+','+tmp.getNodeId());
-                } else {
-                    j++;
-                }
-
-            }
-        }
-        Iterator<TreeNode> iter = treeNodes.iterator();
-        while (iter.hasNext()) {
-            TreeNode tmp4 = iter.next();
-            // System.out.println(tmp4.getNodeId()+','+tmp4.getParentId());
-        }
-
-
         ManyNodeTree tree = new ManyNodeTree();
+        List<String> list = new ArrayList<String>();
+        list.add("/");
+        list.add("trunk");
+        list.add("doc");
+        List<String> list1 = new ArrayList<String>();
+        list1.add("/");
+        list1.add("trunk");
+        list1.add("doc");
+        list1.add("hello");
+        tree.Add_child(list);
+        tree.Add_child(list1);
 
-        System.out.println(tree.iteratorTree(tree.createTree(treeNodes).getRoot()));
+        System.out.println(tree.iteratorTree(tree.getRoot()));
     }
 
 }

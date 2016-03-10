@@ -33,8 +33,19 @@ public class AddDir2SVN {
 
     }
 
-    public void parsedir() {
-        parse.parse_line("/trunk/doc/ppp/10.项目周报" );
+    public void parsedir(String directory, ISVNEditor editor) throws Exception {
+        parse.parse_line("/trunk/doc/ppp/10.项目周报");
+        List<String> list = parse.getDir();
+        editor.openRoot(-1);
+        Iterator<String> iter = list.iterator();
+        for (int j=1; j<list.size(); j++) {
+            editor.addDir(list.get(j), null, -1);
+        }
+        for (int i = 0; i < list.size() - 1; i++) {
+            editor.closeDir();
+        }
+    }
+        /*
         parse.parse_line("/trunk/doc/09.会议纪要");
         parse.parse_line("/trunk/doc/08.部署");
         parse.parse_line("/trunk/doc/04.数据导入");
@@ -46,10 +57,10 @@ public class AddDir2SVN {
         parse.parse_line("/trunk/doc/01.用户需求");
         parse.parse_line("/d/d");
         parse.parse_line("/d/d/d");
+        */
 
-
-        parse.sort_Dir();
-    }
+        //parse.sort_Dir();
+    //}
 
     private  SVNRepository login(String url1) throws SVNException{
         SVNURL Url = SVNURL.parseURIEncoded(url1);
@@ -59,72 +70,14 @@ public class AddDir2SVN {
         return repository;
     }
 
-    public void adddir(SVNRepository repository, String directory) throws SVNException{
+    public void adddir(SVNRepository repository, String directory) throws Exception{
         String currentdir = directory;
         Stack<String> stack = new Stack<String>();
         SVNNodeKind nodeKind;
         ISVNEditor editor;
         int i = 0;
-        nodeKind = repository.checkPath(currentdir,-1);
-        if (nodeKind == SVNNodeKind.DIR) return;
-        while (true) {
-            nodeKind = repository.checkPath(currentdir,-1);
-            if (nodeKind == SVNNodeKind.NONE && currentdir.lastIndexOf("/") != 0 ) {
-                //currentdir.substring(0,currentdir.lastIndexOf("/"));
-                stack.push(currentdir);
-                currentdir = currentdir.substring(0,currentdir.lastIndexOf("/"));
-
-            } else if (nodeKind == SVNNodeKind.NONE && currentdir.lastIndexOf("/") == 0) {
-                    //stack.push(currentdir);
-                    SVNRepository repo2 = login(url);
-                    String add = currentdir.substring(currentdir.lastIndexOf("/")+1,currentdir.length());
-                    editor = repo2.getCommitEditor("add directory",null);
-                    editor.openRoot(-1);
-                    editor.addDir(add,null,-1);
-                    editor.closeDir();
-                    SVNCommitInfo commitInfo = editor.closeEdit();
-
-                    while (!stack.isEmpty()) {
-
-                        SVNRepository repo3 = login(url+currentdir);
-                        currentdir = stack.pop();
-                        String add2 = currentdir.substring(currentdir.lastIndexOf("/")+1,currentdir.length());
-                        editor = repo3.getCommitEditor("add directory",null);
-                        editor.openRoot(-1);
-                        editor.addDir(add2,null,-1);
-                        editor.closeDir();
-                        SVNCommitInfo commitInfo2 = editor.closeEdit();
-
-                    }
-                    break;
-
-            }
-            else if (nodeKind == SVNNodeKind.DIR ) {
-                SVNRepository repo2 = login(url+currentdir);
-                currentdir = stack.pop();
-                String add = currentdir.substring(currentdir.lastIndexOf("/")+1,currentdir.length());
-                editor = repo2.getCommitEditor("add directory trunk,branches,tags",null);
-                editor.openRoot(-1);
-                editor.addDir(add,null,-1);
-                editor.closeDir();
-                SVNCommitInfo commitInfo = editor.closeEdit();
-                while (!stack.isEmpty()) {
-
-                    SVNRepository repo3 = login(url+currentdir);
-                    currentdir = stack.pop();
-                    String add2 = currentdir.substring(currentdir.lastIndexOf("/")+1,currentdir.length());
-                    editor = repo3.getCommitEditor("add directory",null);
-                    editor.openRoot(-1);
-                    editor.addDir(add2,null,-1);
-                    editor.closeDir();
-                    SVNCommitInfo commitInfo2 = editor.closeEdit();
-
-                }
-                break;
-
-            }
-            i++;
-        }
+        editor = repository.getCommitEditor("add directory",null);
+        parsedir(directory,editor);
 
 
     }
@@ -139,16 +92,12 @@ public class AddDir2SVN {
     public static void main(String[] args){
         try {
             AddDir2SVN add = new AddDir2SVN("https://user-PC/svn/qq","kr","123");
-            add.parsedir();
+            //add.parsedir();
             Iterator<Dir> iter = add.parse.getDir3().iterator();
 
             add.setupLibrary();
-            Date date  = new Date();
-            while (iter.hasNext()) {
-                add.adddir(add.login("https://user-PC/svn/qq"), iter.next().dir);
-            }
-            Date date2 = new Date();
-            System.out.println(date2.getTime()-date.getTime());
+            add.adddir(add.login("https://user-PC/svn/qq"),"/trunk");
+            
 
             //add.adddir(add.login("https://user-PC/svn/qq"),"/hello/hh");
         }  catch (Exception e) {

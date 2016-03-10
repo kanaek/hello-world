@@ -115,6 +115,16 @@ public class Parse_Dir {
         }
         //System.out.println(line);
     }
+    public void clear() {
+        dir.clear();
+    }
+
+    public void iter() {
+        Iterator<String> iter3 = dir.iterator();
+        while (iter3.hasNext()) {
+            System.out.println(iter3.next());
+        }
+    }
 
     public void sort_Dir() {
         int count;
@@ -181,6 +191,8 @@ public class Parse_Dir {
         Parse_Dir parse = new Parse_Dir();
 
         parse.parse_line("/trunk/doc/ppp/10.项目周报" );
+
+        /*
         parse.parse_line("/trunk/doc/09.会议纪要");
         parse.parse_line("/trunk/doc/08.部署");
         parse.parse_line("/trunk/doc/04.数据导入");
@@ -192,8 +204,11 @@ public class Parse_Dir {
         parse.parse_line("/trunk/doc/01.用户需求");
         parse.parse_line("/d/d");
         parse.parse_line("/d/d/d");
-
-        parse.sort_Dir();
+        */
+        //parse.iter();
+        parse.getTree().Add_child(parse.dir);
+        parse.getTree().iteratorTree(parse.getTree().getRoot());
+        //parse.sort_Dir();
 
 
     }
