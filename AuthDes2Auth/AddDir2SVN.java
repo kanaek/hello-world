@@ -34,16 +34,23 @@ public class AddDir2SVN {
     }
 
     public void parsedir(String directory, ISVNEditor editor) throws Exception {
-        parse.parse_line("/trunk/doc/ppp/10.项目周报");
+        parse.parse_line(directory);
         List<String> list = parse.getDir();
         editor.openRoot(-1);
         Iterator<String> iter = list.iterator();
         for (int j=1; j<list.size(); j++) {
-            editor.addDir(list.get(j), null, -1);
+            try {
+                editor.addDir(list.get(j), null, -1);
+            }
+            catch (Exception e) {
+
+            }
         }
         for (int i = 0; i < list.size() - 1; i++) {
             editor.closeDir();
         }
+        SVNCommitInfo commitInfo = editor.closeEdit();
+        parse.clear();
     }
         /*
         parse.parse_line("/trunk/doc/09.会议纪要");
@@ -92,11 +99,11 @@ public class AddDir2SVN {
     public static void main(String[] args){
         try {
             AddDir2SVN add = new AddDir2SVN("https://user-PC/svn/qq","kr","123");
-            //add.parsedir();
-            Iterator<Dir> iter = add.parse.getDir3().iterator();
 
             add.setupLibrary();
-            add.adddir(add.login("https://user-PC/svn/qq"),"/trunk");
+            SVNRepository repository = add.login("https://kk-PC/svn/qq");
+            add.adddir(repository,"/trunk");
+            add.adddir(repository,"/trunk/fff");
             
 
             //add.adddir(add.login("https://user-PC/svn/qq"),"/hello/hh");
