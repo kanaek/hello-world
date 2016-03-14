@@ -1,5 +1,9 @@
 package AuthDes2Auth;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
 /**
  * Created by user on 2016/3/7.
  */
@@ -12,6 +16,17 @@ public class TreeNode
     /** 文本内容*/
     private String text;
 
+    private HashMap<String,String> roleautmap = new HashMap<String, String>() ;
+
+    public HashMap<String, String> getRoleautmap() {
+        return roleautmap;
+    }
+
+    public void setRoleautmap(HashMap<String, String> roleautmap) {
+        this.roleautmap = roleautmap;
+    }
+
+
     /**
      * 构造函数
      *
@@ -20,6 +35,7 @@ public class TreeNode
     public TreeNode(String nodeId)
     {
         this.nodeId = nodeId;
+
     }
 
     /**
@@ -32,6 +48,7 @@ public class TreeNode
     {
         this.nodeId = nodeId;
         this.parentId = parentId;
+
     }
 
     public String getNodeId() {
@@ -67,7 +84,16 @@ public class TreeNode
     public static void main(String[] args) {
         TreeNode test = new TreeNode("2","2");
         TreeNode test2 = new TreeNode("2","2");
-        System.out.println(test.TreeNodeSL_Eq(test2));
+       test.getRoleautmap().put("testor","rw");
+        for (Map.Entry<String, String> entry : test.getRoleautmap().entrySet()) {
+
+            String key = entry.getKey().toString();
+
+            String value = entry.getValue().toString();
+
+            System.out.println("key=" + key + " value=" + value);
+
+        }
     }
 
 }

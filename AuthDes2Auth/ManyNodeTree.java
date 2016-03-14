@@ -1,7 +1,10 @@
 package AuthDes2Auth;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
+import org.tmatesoft.svn.core.io.ISVNEditor;
+
+import java.io.OutputStreamWriter;
+import java.util.*;
+
 /**
  * Created by user on 2016/3/7.
  */
@@ -18,6 +21,68 @@ public class ManyNodeTree
         root = new ManyTreeNode(new TreeNode("/"));
     }
 
+    public boolean add_ChildAuth(List<String> dir, String role, String auth) {
+        ManyTreeNode tmpTreeNod = root;
+        List<ManyTreeNode> tmpList = root.getChildList();
+        int i = 1;
+        int flag = 0;
+
+        if (auth.equals("") || auth == null) return false;
+
+        root.getData().getRoleautmap().put(role,"r");
+
+        while (i<dir.size()) {
+            for (int j=0; j<tmpList.size(); j++) {
+                if (tmpList.get(j).getData().getNodeId().equals(dir.get(i)) && tmpList.get(j).getData().getParentId().equals(dir.get(i-1)))   {
+
+                    flag = 1;
+                    tmpTreeNod = tmpList.get(j);
+                    if (i <dir.size()-1)
+                    tmpTreeNod.getData().getRoleautmap().put(role,"r");
+                    else if (i == dir.size()-1) tmpTreeNod.getData().getRoleautmap().put(role,auth);
+                    break;
+                }
+            }
+            if (flag ==0) {
+                return false;
+            } else {
+                flag = 0;
+                tmpList = tmpTreeNod.getChildList();
+                i++;
+            }
+        }
+        return true;
+    }
+
+
+
+    public boolean Search_child(List<String> dir) {
+        ManyTreeNode tmpTreeNod = root;
+        List<ManyTreeNode> tmpList = root.getChildList();
+        int i = 1;
+        int flag = 0;
+
+        while (i<dir.size()) {
+            //tmpTreeNod = new ManyTreeNode(new TreeNode(dir.get(i),dir.get(i-1)));
+            for (int j=0; j<tmpList.size(); j++) {
+                if (tmpList.get(j).getData().getNodeId().equals(dir.get(i)) && tmpList.get(j).getData().getParentId().equals(dir.get(i-1)))   {
+
+                    flag = 1;
+                    tmpTreeNod = tmpList.get(j);
+                    break;
+                }
+            }
+            if (flag ==0) {
+               return false;
+            } else {
+                flag = 0;
+                tmpList = tmpTreeNod.getChildList();
+                i++;
+            }
+        }
+        return true;
+    }
+
     public void Add_child(List<String> dir) {
         ManyTreeNode tmpTreeNod = root;
         List<ManyTreeNode> tmpList = root.getChildList();
@@ -25,19 +90,20 @@ public class ManyNodeTree
         int flag  = 0 ;
         while (i<dir.size()) {
 
-            tmpTreeNod = new ManyTreeNode(new TreeNode(dir.get(i),dir.get(i-1)));
+            //tmpTreeNod = new ManyTreeNode(new TreeNode(dir.get(i),dir.get(i-1)));
             //System.out.println("h");
-            /*
+
             for (int j=0; j<tmpList.size(); j++) {
-                if (tmpTreeNod.getData().TreeNodeSL_Eq(tmpList.get(j).getData())) {
-                    flag = 0;
+                if (tmpList.get(j).getData().getNodeId().equals(dir.get(i)) && tmpList.get(j).getData().getParentId().equals(dir.get(i-1))) {
+                    flag = 1;
                     tmpTreeNod = tmpList.get(j);
                     break;
                 }
-            } */
+            }
             if (flag == 0) {
                 //System.out.println("h");
-                System.out.println(tmpTreeNod.getData().getNodeId());
+                //System.out.println(tmpTreeNod.getData().getNodeId());
+                tmpTreeNod = new ManyTreeNode(new TreeNode(dir.get(i),dir.get(i-1)));
                 tmpList.add(tmpTreeNod);
                 //System.out.println(tmpList.get(0).getData().getNodeId());
             }
@@ -48,63 +114,6 @@ public class ManyNodeTree
         }
 
     }
-    /**
-     * 生成一颗多叉树，根节点为root
-     *
-     * @param treeNodes 生成多叉树的节点集合
-     * @return ManyNodeTree
-     */
-    public ManyNodeTree createTree(List<TreeNode> treeNodes)
-    {
-        if(treeNodes == null || treeNodes.size() < 0)
-            return null;
-
-        ManyNodeTree manyNodeTree =  new ManyNodeTree();
-
-        //将所有节点添加到多叉树中
-        for(TreeNode treeNode : treeNodes)
-        {
-            if(treeNode.getParentId().equals("/"))
-            {
-                //向根添加一个节点
-                String tmpParent = treeNode.getParentId();
-
-                manyNodeTree.getRoot().getChildList().add(new ManyTreeNode(treeNode));
-            }
-            else
-            {
-                addChild(manyNodeTree.getRoot(), treeNode);
-            }
-        }
-
-        return manyNodeTree;
-    }
-
-    /**
-     * 向指定多叉树节点添加子节点
-     *
-     * @param manyTreeNode 多叉树节点
-     * @param child 节点
-     */
-    public void addChild(ManyTreeNode manyTreeNode, TreeNode child)
-    {
-        for(ManyTreeNode item : manyTreeNode.getChildList())
-        {
-            if(item.getData().getNodeId().equals(child.getParentId()))
-            {
-                //找到对应的父亲
-                item.getChildList().add(new ManyTreeNode(child));
-                break;
-            }
-            else
-            {
-                if(item.getChildList() != null && item.getChildList().size() > 0)
-                {
-                    addChild(item, child);
-                }
-            }
-        }
-    }
 
     /**
      * 遍历多叉树
@@ -112,25 +121,85 @@ public class ManyNodeTree
      * @param manyTreeNode 多叉树节点
      * @return
      */
-    public String iteratorTree(ManyTreeNode manyTreeNode)
-    {
-        System.out.println("-----------------------");
+    public void iteratorCreateDir(ManyTreeNode manyTreeNode, ISVNEditor editor) throws Exception {
+          if (manyTreeNode !=null) {
+              for (ManyTreeNode index : manyTreeNode.getChildList())
+              {
+                  try {
+                      editor.addDir(index.getData().getNodeId(),null,-1);
+                  }
+                  catch (Exception e) {
+
+                  }
+                  if (index.getChildList() != null && index.getChildList().size() > 0 )
+                  {
+                      iteratorCreateDir(index,editor);
+                  }
+                  editor.closeDir();
+              }
+          }
+    }
+
+    public void iteratorTreeAuth(ManyTreeNode manyTreeNode,OutputStreamWriter out, String current_dir, String prj) throws Exception {
+        String temp = current_dir;
+        out.write("\r\n");
+        if (manyTreeNode.getData().getNodeId().equals("/")){
+            System.out.println("hele");
+            out.write('['+prj+"/]\r\n");
+            for (Map.Entry<String, String> entry : manyTreeNode.getData().getRoleautmap().entrySet()) {
+
+                String key = entry.getKey();
+
+                String value = entry.getValue();
+
+                System.out.println("key=" + key + " value=" + value);
+                out.write("@"+key+"="+value+"\r\n");
+            }
+            out.write("\r\n");
+        }
+
+         if (manyTreeNode !=null) {
+
+            //System.out.println(manyTreeNode.getData().getNodeId());
+            for (ManyTreeNode index : manyTreeNode.getChildList()) {
+                current_dir = temp+index.getData().getNodeId()+'/';
+                System.out.println(current_dir);
+                out.write('['+prj+current_dir+"]\r\n");
+                for (Map.Entry<String, String> entry : index.getData().getRoleautmap().entrySet()) {
+
+                    String key = entry.getKey().toString();
+
+                    String value = entry.getValue().toString();
+
+                    System.out.println("key=" + key + " value=" + value);
+                    out.write("@"+key+"="+value+"\r\n");
+                }
+                out.write("\r\n");
+
+                if (index.getChildList() != null && index.getChildList().size() > 0) {
+                    iteratorTreeAuth(index, out, current_dir,prj);
+                }
+            }
+        System.out.println("hh:"+manyTreeNode.getData().getNodeId());
+        }
+        out.write("\r\n");
+
+
+    }
+
+    public String iteratorTree(ManyTreeNode manyTreeNode) {
         StringBuilder buffer = new StringBuilder();
         buffer.append("\n");
 
-        if(manyTreeNode != null)
-        {
-            for (ManyTreeNode index : manyTreeNode.getChildList())
-            {
-                buffer.append(index.getData().getNodeId()+ ",");
+        if (manyTreeNode != null) {
+            for (ManyTreeNode index : manyTreeNode.getChildList()) {
+                buffer.append(index.getData().getNodeId() + ",");
 
-                if (index.getChildList() != null && index.getChildList().size() > 0 )
-                {
+                if (index.getChildList() != null && index.getChildList().size() > 0) {
                     buffer.append(iteratorTree(index));
                 }
             }
         }
-
         buffer.append("\n");
 
         return buffer.toString();
@@ -189,7 +258,7 @@ public class ManyNodeTree
 
         ManyNodeTree tree = new ManyNodeTree();
 
-        System.out.println(tree.iteratorTree(tree.createTree(treeNodes).getRoot()));
+       // System.out.println(tree.iteratorTree(tree.createTree(treeNodes).getRoot()));
     }
 
 }

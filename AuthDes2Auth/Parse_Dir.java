@@ -207,7 +207,7 @@ public class Parse_Dir {
         */
         //parse.iter();
         parse.getTree().Add_child(parse.dir);
-        parse.getTree().iteratorTree(parse.getTree().getRoot());
+        //parse.getTree().iteratorTree(parse.getTree().getRoot());
         //parse.sort_Dir();
 
 
