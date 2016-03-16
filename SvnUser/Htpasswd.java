@@ -11,17 +11,18 @@ public class Htpasswd {
     private String CmdPath;
 
     public static void main(String[] args) {
-        String cmd = "C:\\Program Files (x86)\\WANdisco\\uberSVN\\bin\\svn help" ;
+        String cmd = "htpasswd -b F:\\collabnet\\data\\conf\\svn.passwd hahahaha qq" ;
         Runtime run = Runtime.getRuntime();//返回与当前 Java 应用程序相关的运行时对象
         try {
-            Process p = run.exec("cmd.exe");
+            Process p = run.exec(cmd);
             OutputStream os = p.getOutputStream();
             InputStreamReader input =new InputStreamReader(p.getInputStream(),"GBK");
             BufferedReader inBr = new BufferedReader(input);
             String lineStr;
+            /*
             os.write(cmd.getBytes());
             os.flush();
-            os.close();
+            os.close(); */
             while ((lineStr = inBr.readLine()) != null)
                 //获得命令执行后在控制台的输出信息
                 System.out.println(lineStr);// 打印输出信息
